@@ -21,12 +21,4 @@ Imports: MASS, parallel, cowplot, ggplot2, reshape2
 Suggests: capushe, roxygen2
 License: MIT + file LICENSE
 RoxygenNote: 7.2.1
-Collate: 'plot_valse.R' 'main.R' 'selectVariables.R'
-        'constructionModelesLassoRank.R'
-        'constructionModelesLassoMLE.R' 'computeGridLambda.R'
-        'initSmallEM.R' 'EMGrank.R' 'EMGLLF.R' 'generateXY.R'
-        'A_NAMESPACE.R' 'util.R'
-NeedsCompilation: yes
-Packaged: 2021-05-28 10:43:13 UTC; auder
-Repository: CRAN
 Date/Publication: 2021-05-31 08:00:02 UTC
