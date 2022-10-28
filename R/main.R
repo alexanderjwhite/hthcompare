@@ -128,6 +128,9 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
     sumPen <- sapply(models, function(model) k * (dim(model$rho)[1] + sum(model$phi[,,1] != 0) + 1) - 1)
     data.frame(model = paste(i, ".", seq_along(models), sep = ""), pen = sumPen/n, complexity = sumPen, contrast = -LLH)
   }))
+  if(length(is.finite(tableauRecap$contrast))==nrow(tableauRecap)){
+    tableauRecap$contrast[which.min(tableauRecap$complexity)] <- 1
+  }
   tableauRecap <- tableauRecap[is.finite(tableauRecap$contrast),]
   if (verbose) print(tableauRecap)
 
@@ -147,6 +150,10 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
     modelSel$models <- tableauRecap
 
     if (plot) plot_valse(X, Y, modelSel)
+    return(modelSel)
+  } else if(nrow(tableauRecap) > 0){
+    select_bic <- capushe::BICcapushe(tableauRecap, n)
+    modelSel <- models_list[[1]][[which(tableauRecap$model==select_bic$model)]]
     return(modelSel)
   }
   tableauRecap
