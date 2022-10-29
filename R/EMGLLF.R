@@ -74,6 +74,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 
   for (ite in 1:maxi)
   {
+
     # Remember last pi,rho,phi values for exit condition in the end of loop
     Phi <- phi
     Rho <- rho
@@ -159,17 +160,19 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 
     # Precompute det(rho[,,r]) for r in 1...k
     detRho <- sapply(1:k, function(r) gdet(rho[, , r]))
+
     sumLogLLH <- 0
     for (i in 1:n)
     {
       # Update gam[,]; use log to avoid numerical problems
       logGam <- sapply(1:k, function(r) {
-        log(pi[r]) + log(detRho[r]) - 0.5 *
+        log(pi[r]) + (detRho[r]) - 0.5 *
           sum((Y[i, ] %*% rho[, , r] - X[i, ] %*% phi[, , r])^2)
       })
 
       logGam <- logGam - max(logGam) #adjust without changing proportions
       gam[i, ] <- exp(logGam)
+
       norm_fact <- sum(gam[i, ])
       gam[i, ] <- gam[i, ] / norm_fact
       sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))

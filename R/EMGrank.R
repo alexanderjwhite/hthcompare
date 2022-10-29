@@ -91,7 +91,7 @@ matricize <- function(X)
       for (r in seq_len(k))
       {
         dotProduct <- tcrossprod(Y[i, ] %*% Rho[, , r] - X[i, ] %*% phi[, , r])
-        logGamIR <- log(Pi[r]) + log(gdet(Rho[, , r])) - 0.5 * dotProduct
+        logGamIR <- log(Pi[r]) + (gdet(Rho[, , r])) - 0.5 * dotProduct
         # Z[i] = index of max (gam[i,])
         if (logGamIR > maxLogGamIR)
         {
