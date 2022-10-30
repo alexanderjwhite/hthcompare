@@ -17,7 +17,7 @@ Author: Benjamin Auder <benjamin.auder@universite-paris-saclay.fr> [aut,cre],
     Benjamin Goehry <Benjamin.Goehry@math.u-psud.fr> [ctb]
 Maintainer: Benjamin Auder <benjamin.auder@universite-paris-saclay.fr>
 Depends: R (>= 3.5.0)
-Imports: MASS, parallel, cowplot, ggplot2, reshape2
+Imports: MASS, parallel, cowplot, ggplot2, reshape2, purrr
 Suggests: capushe, roxygen2
 License: MIT + file LICENSE
 RoxygenNote: 7.2.1

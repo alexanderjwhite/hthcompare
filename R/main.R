@@ -22,6 +22,8 @@
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
 #' @param plot TRUE to plot the selected models after run
+#' 
+#' @importFrom purrr safely
 #'
 #' @return
 #' The selected model (except if the collection of models
@@ -49,6 +51,7 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   n <- nrow(X)
   p <- ncol(X)
   m <- ncol(Y)
+  s_cap <- purrr::safely(capushe::capushe)
 
   if (verbose) print("main loop: over all k and all lambda")
 
@@ -135,22 +138,31 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   if (verbose) print(tableauRecap)
 
   if (nrow(tableauRecap) > 10) {
-    modSel <- capushe::capushe(tableauRecap, n)
-    indModSel <- if (selecMod == "DDSE") {
-      as.numeric(modSel@DDSE@model)
-    } else if (selecMod == "Djump") {
-      as.numeric(modSel@Djump@model)
-    } else if (selecMod == "BIC") {
-      modSel@BIC_capushe$model
-    } else if (selecMod == "AIC") {
-      modSel@AIC_capushe$model
-    }
-    listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
-    modelSel <- models_list[[listMod[1]]][[listMod[2]]]
-    modelSel$models <- tableauRecap
-
-    if (plot) plot_valse(X, Y, modelSel)
-    return(modelSel)
+    
+    modSel_s <- s_cap(tableauRecap, n)
+    if(is.null(modSel_s)){
+      modSel <- modSel_s$result
+      indModSel <- if (selecMod == "DDSE") {
+        as.numeric(modSel@DDSE@model)
+      } else if (selecMod == "Djump") {
+        as.numeric(modSel@Djump@model)
+      } else if (selecMod == "BIC") {
+        modSel@BIC_capushe$model
+      } else if (selecMod == "AIC") {
+        modSel@AIC_capushe$model
+      }
+      listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
+      modelSel <- models_list[[listMod[1]]][[listMod[2]]]
+      modelSel$models <- tableauRecap
+      
+      if (plot) plot_valse(X, Y, modelSel)
+      return(modelSel)
+    } else {
+      select_bic <- capushe::BICcapushe(tableauRecap, n)
+      modelSel <- models_list[[1]][[which(tableauRecap$model==select_bic$model)]]
+      return(modelSel)
+    } 
+    
   } else if(nrow(tableauRecap) > 0){
     select_bic <- capushe::BICcapushe(tableauRecap, n)
     modelSel <- models_list[[1]][[which(tableauRecap$model==select_bic$model)]]
